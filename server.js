@@ -6,7 +6,7 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static("public"));
+app.use(express.static(__dirname));
 
 const users = [
   { email: "admin@luxuria.com", password: "123456" }
@@ -43,8 +43,13 @@ function auth(req, res, next) {
   }
 }
 
-// DADOS DASHBOARD
-app.get("/dashboard", auth, (req, res) => {
+// DASHBOARD HTML
+app.get("/dashboard", (req, res) => {
+  res.sendFile(__dirname + "/dashboard.html");
+});
+
+// API DADOS
+app.get("/api/dashboard", auth, (req, res) => {
   res.json({
     saldo: 128450,
     receitaHoje: 12840,
@@ -52,11 +57,9 @@ app.get("/dashboard", auth, (req, res) => {
     conversao: 94
   });
 });
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log("Servidor PRO rodando 🚀 na porta " + PORT);
-});
-app.get("/dashboard", (req, res) => {
-  res.sendFile(__dirname + "/dashboard.html");
 });
