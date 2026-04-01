@@ -1,17 +1,56 @@
 const express = require("express");
-const path = require("path");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(express.json());
+app.use(cors());
+app.use(express.static("public"));
 
-// Servir arquivos estáticos
-app.use(express.static(path.join(__dirname)));
+const users = [
+  { email: "admin@luxuria.com", password: "123456" }
+];
 
-// Rota principal
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+// LOGIN
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const user = users.find(u => u.email === email && u.password === password);
+
+  if (!user) {
+    return res.status(401).json({ error: "Credenciais inválidas" });
+  }
+
+  const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+    expiresIn: "1d"
+  });
+
+  res.json({ token });
 });
 
-app.listen(PORT, () => {
-  console.log("Servidor rodando na porta " + PORT);
+// MIDDLEWARE AUTH
+function auth(req, res, next) {
+  const token = req.headers.authorization;
+
+  if (!token) return res.sendStatus(401);
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch {
+    res.sendStatus(403);
+  }
+}
+
+// DADOS DASHBOARD
+app.get("/dashboard", auth, (req, res) => {
+  res.json({
+    saldo: 128450,
+    receitaHoje: 12840,
+    transacoes: 1245,
+    conversao: 94
+  });
 });
+
+app.listen(3000, () => console.log("Servidor PRO rodando 🚀"));
