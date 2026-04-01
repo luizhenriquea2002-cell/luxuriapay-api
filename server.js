@@ -58,5 +58,4 @@ app.listen(PORT, () => {
   console.log("Servidor PRO rodando 🚀 na porta " + PORT);
 });
 app.get("/dashboard", (req, res) => {
-  res.sendFile(__dirname + "/public/dashboard.html");
-});
+  app.use(express.static(__dirname));
