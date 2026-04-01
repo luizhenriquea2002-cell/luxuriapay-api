@@ -1,12 +1,17 @@
-const API_KEY = "luxuria_123"; // depois vamos automatizar
+const express = require("express");
+const path = require("path");
 
-// middleware de proteção
-app.use((req, res, next) => {
-  const key = req.headers["x-api-key"];
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-  if (key !== API_KEY) {
-    return res.status(401).json({ erro: "Não autorizado" });
-  }
+// Servir arquivos estáticos
+app.use(express.static(path.join(__dirname)));
 
-  next();
+// Rota principal
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log("Servidor rodando na porta " + PORT);
 });
