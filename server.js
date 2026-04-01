@@ -52,5 +52,8 @@ app.get("/dashboard", auth, (req, res) => {
     conversao: 94
   });
 });
+const PORT = process.env.PORT || 3000;
 
-app.listen(3000, () => console.log("Servidor PRO rodando 🚀"));
+app.listen(PORT, () => {
+  console.log("Servidor PRO rodando 🚀 na porta " + PORT);
+});
